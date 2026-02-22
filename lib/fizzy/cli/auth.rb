@@ -60,10 +60,10 @@ module Fizzy
         File.write(Auth::TOKEN_FILE, YAML.dump(data))
         File.chmod(0o600, Auth::TOKEN_FILE)
 
-        puts "Authenticated as #{accounts.first.dig("user", "name")}"
-        accounts.each do |a|
-          marker = a["slug"] == data["default_account"] ? " (default)" : ""
-          puts "  #{a["name"]} (#{a["slug"]})#{marker}"
+        puts "Authenticated as #{token_accounts.first.dig("user", "name")}"
+        token_accounts.each do |a|
+          marker = a["account_slug"] == data["default_account"] ? " (default)" : ""
+          puts "  #{a["account_name"]} (#{a["account_slug"]})#{marker}"
         end
       end
 
