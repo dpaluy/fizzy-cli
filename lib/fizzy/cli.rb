@@ -13,6 +13,7 @@ require_relative "cli/users"
 require_relative "cli/notifications"
 require_relative "cli/pins"
 require_relative "cli/auth"
+require_relative "cli/skill"
 
 module Fizzy
   class CLI < Thor
@@ -56,6 +57,9 @@ module Fizzy
 
     desc "auth SUBCOMMAND ...ARGS", "Authentication commands"
     subcommand "auth", CLI::AuthCommands
+
+    desc "skill SUBCOMMAND ...ARGS", "Manage AI skill files"
+    subcommand "skill", CLI::Skill
 
     def self.exit_on_failure? = true
   end
