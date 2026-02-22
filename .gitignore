@@ -1,6 +1,6 @@
 .agents.local.yml
 .agents.yml
-.claude/current_task.txt
+.claude
 sk.txt
 pkg/
 *.gem
@@ -8,3 +8,4 @@ pkg/
 doc/
 .DS_Store
 .ruby-lsp/
+

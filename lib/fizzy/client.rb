@@ -25,10 +25,6 @@ module Fizzy
       request(:put, path, body: body)
     end
 
-    def patch(path, body: nil)
-      request(:patch, path, body: body)
-    end
-
     def delete(path)
       request(:delete, path)
     end
@@ -43,6 +39,11 @@ module Fizzy
         http.open_timeout = 5
         http.read_timeout = 30
         http.start
+        at_exit do
+          http.finish
+        rescue StandardError
+          nil
+        end
         http
       end
     end
@@ -71,7 +72,6 @@ module Fizzy
       when :get    then Net::HTTP::Get.new(uri)
       when :post   then Net::HTTP::Post.new(uri)
       when :put    then Net::HTTP::Put.new(uri)
-      when :patch  then Net::HTTP::Patch.new(uri)
       when :delete then Net::HTTP::Delete.new(uri)
       end
     end
@@ -116,7 +116,15 @@ module Fizzy
 
     def parse_error(response)
       data = JSON.parse(response.body)
-      data["error"] || data["errors"]&.join(", ") || response.body
+
+      if data["errors"].is_a?(Array) && data["errors"].any?
+        items = data["errors"].map do |e|
+          e.is_a?(Hash) ? "#{e["field"]}: #{e["message"]}" : e.to_s
+        end
+        "Validation failed\n  - #{items.join("\n  - ")}"
+      else
+        data["error"] || response.body
+      end
     rescue JSON::ParserError
       response.body
     end

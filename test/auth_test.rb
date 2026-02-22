@@ -49,7 +49,7 @@ class AuthTest < Minitest::Test
     }
 
     File.stub(:exist?, ->(path) { path == Fizzy::Auth::TOKEN_FILE || File.method(:exist?).unbind.bind(File).call(path) }) do
-      File.stub(:read, ->(path) { path == Fizzy::Auth::TOKEN_FILE ? token_data.to_json : File.method(:read).unbind.bind(File).call(path) }) do
+      YAML.stub(:safe_load_file, ->(path, **_opts) { path == Fizzy::Auth::TOKEN_FILE ? token_data : YAML.method(:safe_load_file).unbind.bind(YAML).call(path) }) do
         result = Fizzy::Auth.resolve
 
         assert_equal "file-token-1", result["access_token"]
@@ -68,7 +68,7 @@ class AuthTest < Minitest::Test
     }
 
     File.stub(:exist?, ->(path) { path == Fizzy::Auth::TOKEN_FILE || File.method(:exist?).unbind.bind(File).call(path) }) do
-      File.stub(:read, ->(path) { path == Fizzy::Auth::TOKEN_FILE ? token_data.to_json : File.method(:read).unbind.bind(File).call(path) }) do
+      YAML.stub(:safe_load_file, ->(path, **_opts) { path == Fizzy::Auth::TOKEN_FILE ? token_data : YAML.method(:safe_load_file).unbind.bind(YAML).call(path) }) do
         result = Fizzy::Auth.resolve("other")
 
         assert_equal "file-token-2", result["access_token"]
@@ -92,7 +92,7 @@ class AuthTest < Minitest::Test
     }
 
     File.stub(:exist?, ->(path) { path == Fizzy::Auth::TOKEN_FILE || File.method(:exist?).unbind.bind(File).call(path) }) do
-      File.stub(:read, ->(path) { path == Fizzy::Auth::TOKEN_FILE ? token_data.to_json : File.method(:read).unbind.bind(File).call(path) }) do
+      YAML.stub(:safe_load_file, ->(path, **_opts) { path == Fizzy::Auth::TOKEN_FILE ? token_data : YAML.method(:safe_load_file).unbind.bind(YAML).call(path) }) do
         assert_raises(Fizzy::AuthError) { Fizzy::Auth.resolve("nonexistent") }
       end
     end
@@ -131,7 +131,7 @@ class AuthTest < Minitest::Test
     }
 
     File.stub(:exist?, ->(path) { path == Fizzy::Auth::TOKEN_FILE || File.method(:exist?).unbind.bind(File).call(path) }) do
-      File.stub(:read, ->(path) { path == Fizzy::Auth::TOKEN_FILE ? token_data.to_json : File.method(:read).unbind.bind(File).call(path) }) do
+      YAML.stub(:safe_load_file, ->(path, **_opts) { path == Fizzy::Auth::TOKEN_FILE ? token_data : YAML.method(:safe_load_file).unbind.bind(YAML).call(path) }) do
         result = Fizzy::Auth.resolve
 
         assert_equal "file-token-1", result["access_token"]
