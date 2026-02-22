@@ -37,7 +37,7 @@ module Fizzy
         # Build tokens data
         token_accounts = accounts.map do |a|
           {
-            "account_slug" => a["slug"],
+            "account_slug" => Auth.normalize_slug(a["slug"]),
             "account_name" => a["name"],
             "account_id" => a["id"],
             "access_token" => token,
@@ -53,7 +53,7 @@ module Fizzy
 
         data = {
           "accounts" => token_accounts,
-          "default_account" => accounts.first["slug"]
+          "default_account" => Auth.normalize_slug(accounts.first["slug"])
         }
 
         FileUtils.mkdir_p(Auth::CONFIG_DIR)
