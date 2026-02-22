@@ -3,7 +3,7 @@
 module Fizzy
   class Auth
     CONFIG_DIR = File.expand_path("~/.config/fizzy-cli")
-    TOKEN_FILE = File.join(CONFIG_DIR, "tokens.json")
+    TOKEN_FILE = File.join(CONFIG_DIR, "tokens.yml")
 
     def self.resolve(account_slug = nil)
       if ENV["FIZZY_TOKEN"]
@@ -25,7 +25,7 @@ module Fizzy
               "No tokens file at #{TOKEN_FILE}. Run: fizzy auth login --token TOKEN"
       end
 
-      data = JSON.parse(File.read(TOKEN_FILE))
+      data = YAML.safe_load_file(TOKEN_FILE, permitted_classes: [Time])
       slug = normalize_slug(account_slug || data["default_account"])
       account = data["accounts"]&.find { |a| normalize_slug(a["account_slug"]) == slug }
       raise AuthError, "No account found for #{slug}" unless account

@@ -9,7 +9,7 @@ Ask more questions until you have enough context to give an accurate & confident
 - **Ruby 4.0.1** gem with **Thor 1.5** CLI framework
 - Production gem (v0.1.0), MIT licensed
 - HTTP client talking to `https://app.fizzy.do` REST API
-- Token auth stored at `~/.config/fizzy-cli/tokens.json`
+- Token auth stored at `~/.config/fizzy-cli/tokens.yml`
 
 ### Structure
 

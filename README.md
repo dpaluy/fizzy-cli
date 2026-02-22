@@ -31,7 +31,7 @@ gem install fizzy
 fizzy auth login --token YOUR_TOKEN
 ```
 
-Tokens are stored at `~/.config/fizzy-cli/tokens.json`. You can also set `FIZZY_TOKEN` as an environment variable with `--account` to skip the file.
+Tokens are stored at `~/.config/fizzy-cli/tokens.yml`. You can also set `FIZZY_TOKEN` as an environment variable with `--account` to skip the file.
 
 ```sh
 fizzy auth status     # Show current auth
@@ -42,6 +42,11 @@ fizzy auth switch SLUG  # Change default account
 ## Usage
 
 All commands support `--json` for JSON output and `--account SLUG` to override the default account.
+
+```sh
+# Use a different account
+fizzy cards list --board BOARD_ID --account my-other-team
+```
 
 ### Boards
 
@@ -142,7 +147,7 @@ fizzy pins unpin 42
 ### Other
 
 ```sh
-fizzy identity   # Show accounts and user info
+fizzy auth identity   # Show current user info
 fizzy version    # Print version
 fizzy help       # List all commands
 ```
@@ -173,7 +178,7 @@ end
 
 | Source | Purpose |
 |--------|---------|
-| `~/.config/fizzy-cli/tokens.json` | Stored auth tokens and default account |
+| `~/.config/fizzy-cli/tokens.yml` | Stored auth tokens and default account |
 | `FIZZY_TOKEN` env var | Token override (requires `--account`) |
 
 ## Development

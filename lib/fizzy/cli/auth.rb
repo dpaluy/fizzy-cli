@@ -57,7 +57,7 @@ module Fizzy
         }
 
         FileUtils.mkdir_p(Auth::CONFIG_DIR)
-        File.write(Auth::TOKEN_FILE, JSON.pretty_generate(data))
+        File.write(Auth::TOKEN_FILE, YAML.dump(data))
         File.chmod(0o600, Auth::TOKEN_FILE)
 
         puts "Authenticated as #{accounts.first.dig("user", "name")}"
@@ -85,7 +85,7 @@ module Fizzy
 
       desc "accounts", "List available accounts"
       def accounts
-        data = JSON.parse(File.read(Auth::TOKEN_FILE))
+        data = YAML.safe_load_file(Auth::TOKEN_FILE, permitted_classes: [Time])
         data["accounts"].each do |a|
           marker = a["account_slug"] == data["default_account"] ? " *" : ""
           puts "#{a["account_name"]} (#{a["account_slug"]})#{marker}"
@@ -95,13 +95,13 @@ module Fizzy
 
       desc "switch ACCOUNT_SLUG", "Set default account"
       def switch(account_slug)
-        data = JSON.parse(File.read(Auth::TOKEN_FILE))
+        data = YAML.safe_load_file(Auth::TOKEN_FILE, permitted_classes: [Time])
         normalized = Auth.normalize_slug(account_slug)
         account = data["accounts"].find { |a| Auth.normalize_slug(a["account_slug"]) == normalized }
         raise AuthError, "No account found for #{account_slug}" unless account
 
         data["default_account"] = normalized
-        File.write(Auth::TOKEN_FILE, JSON.pretty_generate(data))
+        File.write(Auth::TOKEN_FILE, YAML.dump(data))
 
         puts "Switched to #{account["account_name"]} (#{normalized})"
       end

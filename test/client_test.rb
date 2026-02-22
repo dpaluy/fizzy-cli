@@ -67,18 +67,6 @@ class ClientTest < Minitest::Test
     assert_equal({ "id" => "1", "name" => "Updated" }, response.body)
   end
 
-  # --- PATCH ---
-
-  def test_patch_sends_json_body
-    stub_request(:patch, "#{BASE}/api/boards/1")
-      .with(body: '{"name":"Patched"}', headers: { "Content-Type" => "application/json" })
-      .to_return(status: 200, body: '{"id":"1","name":"Patched"}', headers: { "Content-Type" => "application/json" })
-
-    response = @client.patch("/api/boards/1", body: { name: "Patched" })
-
-    assert_equal({ "id" => "1", "name" => "Patched" }, response.body)
-  end
-
   # --- DELETE ---
 
   def test_delete_request
@@ -154,13 +142,32 @@ class ClientTest < Minitest::Test
     assert_equal "Name is required", error.message
   end
 
-  def test_422_raises_validation_error_with_errors_array
+  def test_422_raises_validation_error_with_errors_string_array
     stub_request(:post, "#{BASE}/api/boards")
       .to_return(status: 422, body: '{"errors":["Name is required","Slug is taken"]}', headers: { "Content-Type" => "application/json" })
 
     error = assert_raises(Fizzy::ValidationError) { @client.post("/api/boards", body: {}) }
 
-    assert_equal "Name is required, Slug is taken", error.message
+    assert_equal "Validation failed\n  - Name is required\n  - Slug is taken", error.message
+  end
+
+  def test_422_raises_validation_error_with_errors_hash_array
+    body = '{"errors":[{"field":"title","message":"can\'t be blank"},{"field":"slug","message":"is already taken"}]}'
+    stub_request(:post, "#{BASE}/api/boards")
+      .to_return(status: 422, body: body, headers: { "Content-Type" => "application/json" })
+
+    error = assert_raises(Fizzy::ValidationError) { @client.post("/api/boards", body: {}) }
+
+    assert_equal "Validation failed\n  - title: can't be blank\n  - slug: is already taken", error.message
+  end
+
+  def test_422_raises_validation_error_with_unparseable_body
+    stub_request(:post, "#{BASE}/api/boards")
+      .to_return(status: 422, body: "Not JSON", headers: { "Content-Type" => "text/plain" })
+
+    error = assert_raises(Fizzy::ValidationError) { @client.post("/api/boards", body: {}) }
+
+    assert_equal "Not JSON", error.message
   end
 
   def test_429_raises_rate_limit_error
@@ -203,6 +210,20 @@ class ClientTest < Minitest::Test
     assert_equal({ "a" => 1 }, response.body)
     assert_equal({}, response.headers)
     assert_equal 200, response.status
+  end
+
+  # --- Connection auto-close ---
+
+  def test_connection_registers_at_exit_hook
+    stub_request(:get, "#{BASE}/api/boards")
+      .to_return(status: 200, body: "[]", headers: { "Content-Type" => "application/json" })
+
+    at_exit_called = false
+    @client.stub(:at_exit, ->(&_block) { at_exit_called = true }) do
+      @client.get("/api/boards")
+    end
+
+    assert at_exit_called, "Expected at_exit to be registered when connection is created"
   end
 
   # --- Account slug ---

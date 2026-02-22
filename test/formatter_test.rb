@@ -86,6 +86,72 @@ class FormatterTest < Minitest::Test
     assert_match(/^Name\s+Board$/, lines[1])
   end
 
+  def test_table_with_nil_values
+    Fizzy::Formatter.table(
+      [["1", nil], [nil, "Board B"]],
+      headers: %w[ID Name],
+      io: @io
+    )
+
+    lines = @io.string.split("\n")
+    assert_equal 4, lines.length
+    assert_match(/1\s+$/, lines[2])
+    assert_match(/Board B/, lines[3])
+  end
+
+  def test_table_with_cjk_characters
+    Fizzy::Formatter.table(
+      [%w[1 こんにちは], %w[2 Hello]],
+      headers: %w[ID Name],
+      io: @io
+    )
+
+    lines = @io.string.split("\n")
+    # "こんにちは" is 5 chars but 10 display columns
+    # "Hello" is 5 chars and 5 display columns
+    # Column width should be 10 (max display width)
+    # The separator line should have 10 dashes for the Name column
+    assert_equal 10, lines[1].split("  ").last.length
+  end
+
+  def test_table_with_emoji
+    Fizzy::Formatter.table(
+      [["1", "🎉 Party"], ["2", "Normal"]],
+      headers: %w[ID Name],
+      io: @io
+    )
+
+    lines = @io.string.split("\n")
+    # Both rows should have consistent alignment
+    assert_equal 4, lines.length
+  end
+
+  # --- display_width ---
+
+  def test_display_width_ascii
+    assert_equal 5, Fizzy::Formatter.send(:display_width, "hello")
+  end
+
+  def test_display_width_cjk
+    assert_equal 10, Fizzy::Formatter.send(:display_width, "こんにちは")
+  end
+
+  def test_display_width_mixed
+    assert_equal 9, Fizzy::Formatter.send(:display_width, "hi こんに")
+  end
+
+  def test_display_width_emoji
+    assert_equal 2, Fizzy::Formatter.send(:display_width, "🎉")
+  end
+
+  def test_display_width_nil
+    assert_equal 0, Fizzy::Formatter.send(:display_width, nil)
+  end
+
+  def test_display_width_empty
+    assert_equal 0, Fizzy::Formatter.send(:display_width, "")
+  end
+
   # --- truncate ---
 
   def test_truncate_short_string_unchanged

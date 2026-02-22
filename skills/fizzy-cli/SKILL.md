@@ -14,7 +14,7 @@ Ruby CLI for [Fizzy](https://fizzy.do) project management. Installed as `fizzy` 
 
 ## Authentication
 
-Credentials stored at `~/.config/fizzy-cli/tokens.json`. Check status before operations:
+Credentials stored at `~/.config/fizzy-cli/tokens.yml`. Check status before operations:
 
 ```bash
 fizzy auth status
@@ -226,5 +226,5 @@ fizzy cards list --assignee $MY_ID
 - Cards use **numbers** (integers), everything else uses **IDs** (base36 UUIDs)
 - `fizzy cards get` returns steps inline — no separate steps list endpoint
 - Append `help` to any subcommand: `fizzy cards help`, `fizzy columns help`
-- Credentials at `~/.config/fizzy-cli/tokens.json`
+- Credentials at `~/.config/fizzy-cli/tokens.yml`
 - Override account per-command with `--account /SLUG`

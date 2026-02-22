@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-02-21
+
+### Changed
+- Token storage migrated from JSON (`tokens.json`) to YAML (`tokens.yml`)
+- Auth file parsing uses `YAML.safe_load_file` instead of `JSON.parse`
+
+### Fixed
+- Formatter table column alignment with CJK characters, emoji, and other wide Unicode
+- Formatter handles nil cell values without error
+- ValidationError now shows human-readable output (`- field: message`) instead of raw JSON
+- `identity` command documented as `fizzy auth identity` in README
+- HTTP connection auto-closes on process exit via `at_exit` hook
+
+### Added
+- `--account SLUG` usage example in README
+- CLI integration tests for boards, cards, auth, and error handling (10 tests)
+
+### Removed
+- Unused `patch` HTTP method from Client
+
 ## [0.1.0] - 2025-02-21
 
 ### Added
