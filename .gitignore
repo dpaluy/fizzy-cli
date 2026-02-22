@@ -1,0 +1,10 @@
+.agents.local.yml
+.agents.yml
+.claude/current_task.txt
+sk.txt
+pkg/
+*.gem
+.yardoc/
+doc/
+.DS_Store
+.ruby-lsp/

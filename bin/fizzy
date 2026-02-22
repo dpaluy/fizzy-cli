@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/fizzy"
+
+begin
+  Fizzy::CLI.start(ARGV)
+rescue Fizzy::Error => e
+  warn "Error: #{e.message}"
+  exit 1
+rescue Interrupt
+  exit 130
+end
