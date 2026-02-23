@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-02-22
+
+### Added
+- Per-project `.fizzy.yml` config file for account and board defaults
+- `fizzy init` interactive command to create `.fizzy.yml`
+- `ProjectConfig` class that walks up directories to find nearest `.fizzy.yml`
+- Resolution priority: CLI flag > `.fizzy.yml` > global tokens.yml default
+- `Auth.token_data` class method to centralize token file reading
+- `--board` is now optional for columns and card create when set in `.fizzy.yml`
+
+### Fixed
+- Client follows Location header on any 2xx with empty body, not just 201
+- All update commands handle nil response body instead of crashing with NoMethodError
+- Skill file incorrectly documented `fizzy identity` instead of `fizzy auth identity`
+- Guard against empty string in `--board` and `--account` flag values
+- `ProjectConfig` rescues `Psych::SyntaxError` with user-friendly error message
+- Blank or non-hash `.fizzy.yml` files treated as empty config instead of crashing
+
 ## [0.3.2] - 2026-02-22
 
 ### Changed
