@@ -35,6 +35,22 @@ fizzy auth accounts           # List accounts (* = default)
 fizzy auth switch SLUG        # Change default (e.g. 6160537)
 ```
 
+## Project Configuration
+
+Set per-project defaults with `fizzy init` (interactive) or by creating `.fizzy.yml`:
+
+```yaml
+account: acme
+board: b1
+```
+
+Resolution priority (highest wins):
+1. CLI flag (`--account` / `--board`)
+2. `.fizzy.yml` (nearest ancestor directory)
+3. Global default from `~/.config/fizzy-cli/tokens.yml`
+
+When `.fizzy.yml` sets a board, `--board` is no longer required for columns or card create commands.
+
 ## Global Flags
 
 All commands support:
@@ -60,7 +76,7 @@ fizzy boards delete BOARD_ID
 
 ## Cards
 
-Cards are addressed by **number** (integer), not ID. The `--board` flag is only required for `create`.
+Cards are addressed by **number** (integer), not ID. The `--board` flag is required for `create` unless set in `.fizzy.yml`.
 
 ### CRUD
 
@@ -94,7 +110,7 @@ fizzy cards ungolden 42                              # Remove golden
 
 ## Columns
 
-Columns are scoped to a board — `--board` is always required.
+Columns are scoped to a board — `--board` is required unless set in `.fizzy.yml`.
 
 ```bash
 fizzy columns list --board BOARD_ID
@@ -228,3 +244,4 @@ fizzy cards list --assignee $MY_ID
 - Append `help` to any subcommand: `fizzy cards help`, `fizzy columns help`
 - Credentials at `~/.config/fizzy-cli/tokens.yml`
 - Override account per-command with `--account SLUG`
+- Use `fizzy init` or `.fizzy.yml` to set project defaults for account and board

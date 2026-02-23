@@ -25,6 +25,19 @@ module Fizzy
       puts "fizzy-cli #{VERSION}"
     end
 
+    desc "init", "Create .fizzy.yml in current directory"
+    def init
+      config_path = File.join(Dir.pwd, ProjectConfig::FILENAME)
+      return if File.exist?(config_path) && !yes?("#{config_path} already exists. Overwrite?")
+
+      selected = pick_account
+      config = { "account" => selected["account_slug"] }
+      config["board"] = pick_board(selected) if yes?("Set a default board?")
+
+      File.write(config_path, YAML.dump(config))
+      say "Wrote #{config_path}"
+    end
+
     desc "boards SUBCOMMAND ...ARGS", "Manage boards"
     subcommand "boards", CLI::Boards
 
@@ -62,5 +75,47 @@ module Fizzy
     subcommand "skill", CLI::Skill
 
     def self.exit_on_failure? = true
+
+    private
+
+    def pick_account
+      data = Auth.token_data
+      accounts = Array(data["accounts"])
+      raise AuthError, "No accounts found. Run: fizzy auth login --token TOKEN" if accounts.empty?
+
+      say "Available accounts:"
+      accounts.each_with_index do |a, i|
+        marker = a["account_slug"] == data["default_account"] ? " (default)" : ""
+        say "  #{i + 1}. #{a["account_name"]} (#{a["account_slug"]})#{marker}"
+      end
+
+      choice = ask("Select account number [1]:").strip
+      choice = "1" if choice.empty?
+      idx = choice.to_i - 1
+      raise Thor::Error, "Invalid selection" unless idx >= 0 && idx < accounts.size
+
+      accounts[idx]
+    end
+
+    def pick_board(account)
+      c = Client.new(token: account["access_token"], account_slug: account["account_slug"])
+      boards = c.get("boards").body
+
+      if boards.empty?
+        say "No boards found."
+        return nil
+      end
+
+      say "Boards:"
+      boards.each_with_index do |b, i|
+        say "  #{i + 1}. #{b["name"]} (#{b["id"]})"
+      end
+
+      board_idx = ask("Select board number:").strip.to_i - 1
+      return boards[board_idx]["id"] if board_idx >= 0 && board_idx < boards.size
+
+      say "Invalid selection, skipping board."
+      nil
+    end
   end
 end

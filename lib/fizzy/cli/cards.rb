@@ -51,14 +51,14 @@ module Fizzy
       end
 
       desc "create TITLE", "Create a card"
-      option :board, required: true, desc: "Board ID"
+      option :board, desc: "Board ID"
       option :body, desc: "Card body (HTML)"
       option :column, desc: "Column ID"
       def create(title)
         body = { title: title }
         body[:body] = options[:body] if options[:body]
         body[:column_id] = options[:column] if options[:column]
-        resp = client.post("boards/#{options[:board]}/cards", body: body)
+        resp = client.post("boards/#{require_board!}/cards", body: body)
         c = resp.body
         output_detail(c, pairs: [
                         ["Number", "##{c["number"]}"],

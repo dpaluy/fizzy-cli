@@ -51,6 +51,26 @@ fizzy auth accounts   # List available accounts
 fizzy auth switch SLUG  # Change default account
 ```
 
+## Project Configuration
+
+Set project-level defaults so you don't need `--account` and `--board` on every command:
+
+```sh
+fizzy init
+```
+
+This creates a `.fizzy.yml` in the current directory:
+
+```yaml
+account: acme
+board: b1
+```
+
+**Resolution priority** (highest wins):
+1. CLI flag (`--account` / `--board`)
+2. `.fizzy.yml` (nearest ancestor directory)
+3. Global `default_account` from `~/.config/fizzy-cli/tokens.yml`
+
 ## Usage
 
 All commands support `--json` for JSON output and `--account SLUG` to override the default account.
@@ -190,6 +210,7 @@ end
 
 | Source | Purpose |
 |--------|---------|
+| `.fizzy.yml` | Per-project account and board defaults |
 | `~/.config/fizzy-cli/tokens.yml` | Stored auth tokens and default account |
 | `FIZZY_TOKEN` env var | Token override (requires `--account`) |
 

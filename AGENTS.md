@@ -7,7 +7,7 @@ Ask more questions until you have enough context to give an accurate & confident
 ## WHAT (Architecture)
 
 - **Ruby 4.0.1** gem with **Thor 1.5** CLI framework
-- Production gem (v0.1.0), MIT licensed
+- Production gem, MIT licensed
 - HTTP client talking to `https://app.fizzy.do` REST API
 - Token auth stored at `~/.config/fizzy-cli/tokens.yml`
 
@@ -31,6 +31,7 @@ lib/fizzy/
   cli/pins.rb            # Pin/unpin cards
   cli/auth.rb            # Auth subcommands (login, status, switch)
   auth.rb               # Token resolution (file + env var)
+  project_config.rb     # .fizzy.yml resolution (walks up from pwd)
   client.rb             # HTTP client (Net::HTTP, JSON, bearer auth)
   paginator.rb          # Link-header pagination
   formatter.rb          # Output: table, json, detail
@@ -46,10 +47,13 @@ CLI for managing Fizzy boards, cards, columns, steps, comments, reactions, tags,
 ### Key Concepts
 
 - **Cards** are addressed by **number** (integer), everything else by **ID** (base36 UUID)
-- **Columns** and **Steps** are scoped (require `--board` / `--card`)
-- `Client` uses `Net::HTTP` directly, returns `Fizzy::Response` (Data.define)
+- **Columns** and **Steps** are scoped (`--board` / `--card`, or board from `.fizzy.yml`)
+- `Client` uses `Net::HTTP` directly, returns `Fizzy::Response` (Data.define). Auto-prepends `/{account_slug}/` to relative paths; absolute paths (starting with `/`) pass through as-is
 - `Paginator` follows RFC 5988 Link headers for pagination
-- All CLI subcommands include `Base` module for shared `client`, `account`, `json?`, `output_list`, `output_detail`
+- CLI subcommands pass relative paths (e.g. `"cards/#{number}"`) — the Client handles slug prefixing
+- All CLI subcommands include `Base` module for shared `client`, `account`, `board`, `require_board!`, `json?`, `output_list`, `output_detail`
+- `ProjectConfig` finds `.fizzy.yml` by walking up from `Dir.pwd` — provides `account` and `board` defaults
+- Resolution priority: CLI flag > `.fizzy.yml` > global default from tokens.yml
 
 ## HOW (Workflows)
 
@@ -69,7 +73,10 @@ ruby -Ilib bin/fizzy help
 
 ### Testing
 
-No test suite yet. When adding tests, use Minitest (gem convention).
+```sh
+bundle exec rake          # tests + rubocop
+bundle exec rake test     # tests only
+```
 
 ### Adding a New Subcommand
 
@@ -81,6 +88,6 @@ No test suite yet. When adding tests, use Minitest (gem convention).
 ### Code Style
 
 - Ruby 4.0.1 features allowed (Data.define, pattern matching, etc.)
-- Snake_case methods, no frozen_string_literal needed in Ruby 4
+- Snake_case methods, `frozen_string_literal: true` included by convention (not required in Ruby 4)
 - Minimal dependencies — stdlib `net/http`, `json`, `uri` only
 - Thor conventions for CLI option declarations

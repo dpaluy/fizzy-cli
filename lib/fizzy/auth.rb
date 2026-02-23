@@ -19,13 +19,17 @@ module Fizzy
       slug&.delete_prefix("/")
     end
 
-    def self.resolve_from_file(account_slug)
+    def self.token_data
       unless File.exist?(TOKEN_FILE)
         raise AuthError,
               "No tokens file at #{TOKEN_FILE}. Run: fizzy auth login --token TOKEN"
       end
 
-      data = YAML.safe_load_file(TOKEN_FILE, permitted_classes: [Time])
+      YAML.safe_load_file(TOKEN_FILE, permitted_classes: [Time])
+    end
+
+    def self.resolve_from_file(account_slug)
+      data = token_data
       slug = normalize_slug(account_slug || data["default_account"])
       account = data["accounts"]&.find { |a| normalize_slug(a["account_slug"]) == slug }
       raise AuthError, "No account found for #{slug}" unless account

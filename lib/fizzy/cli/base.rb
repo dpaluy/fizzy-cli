@@ -17,8 +17,24 @@ module Fizzy
         parent_options || options
       end
 
+      def project_config
+        @project_config ||= ProjectConfig.new
+      end
+
       def account
-        @account ||= Auth.resolve(global_options[:account])
+        slug = global_options[:account]
+        slug = nil if slug&.empty?
+        @account ||= Auth.resolve(slug || project_config.account)
+      end
+
+      def board
+        b = options[:board]
+        b && !b.empty? ? b : project_config.board
+      end
+
+      def require_board!
+        board || raise(Thor::Error,
+                       "No value provided for option '--board'. Set via --board, .fizzy.yml, or: fizzy init")
       end
 
       def client
