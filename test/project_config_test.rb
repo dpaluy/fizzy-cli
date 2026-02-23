@@ -77,4 +77,25 @@ class ProjectConfigTest < Minitest::Test
       assert_nil config.board
     end
   end
+
+  def test_boards_returns_cached_hash
+    Dir.mktmpdir do |dir|
+      data = { "account" => "acme", "boards" => { "b1" => "Sprint Board", "b2" => "Backlog" } }
+      File.write(File.join(dir, ".fizzy.yml"), YAML.dump(data))
+
+      config = Fizzy::ProjectConfig.new(dir)
+
+      assert_equal({ "b1" => "Sprint Board", "b2" => "Backlog" }, config.boards)
+    end
+  end
+
+  def test_boards_returns_empty_hash_when_missing
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, ".fizzy.yml"), YAML.dump("account" => "acme"))
+
+      config = Fizzy::ProjectConfig.new(dir)
+
+      assert_equal({}, config.boards)
+    end
+  end
 end

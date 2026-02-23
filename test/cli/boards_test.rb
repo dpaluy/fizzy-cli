@@ -89,4 +89,50 @@ class CLIBoardsTest < Minitest::Test
     assert_match(/Columns\s+3/, out)
     assert_match(/Created\s+2024-01-15/, out)
   end
+
+  def test_boards_sync_writes_boards_to_config
+    Dir.mktmpdir do |dir|
+      config_path = File.join(dir, ".fizzy.yml")
+      File.write(config_path, YAML.dump("account" => "test-team", "board" => "b1"))
+
+      stub_request(:get, "#{BASE}/test-team/boards")
+        .to_return(
+          status: 200,
+          body: [
+            { "id" => "b1", "name" => "Sprint Board", "open_cards_count" => 5, "columns_count" => 3 },
+            { "id" => "b2", "name" => "Backlog", "open_cards_count" => 12, "columns_count" => 4 }
+          ].to_json,
+          headers: { "Content-Type" => "application/json" }
+        )
+
+      out, = capture_io do
+        Dir.stub(:pwd, dir) do
+          Fizzy::Auth.stub(:resolve, ACCOUNT) do
+            Fizzy::CLI::Boards.new([], {}, {}).invoke(:sync)
+          end
+        end
+      end
+
+      assert_match(/Synced 2 board/, out)
+
+      written = YAML.safe_load_file(config_path)
+      assert_equal({ "b1" => "Sprint Board", "b2" => "Backlog" }, written["boards"])
+      assert_equal "test-team", written["account"]
+      assert_equal "b1", written["board"]
+    end
+  end
+
+  def test_boards_sync_errors_without_config
+    Dir.mktmpdir do |dir|
+      err = assert_raises(Thor::Error) do
+        Dir.stub(:pwd, dir) do
+          Fizzy::Auth.stub(:resolve, ACCOUNT) do
+            Fizzy::CLI::Boards.new([], {}, {}).invoke(:sync)
+          end
+        end
+      end
+
+      assert_match(/No \.fizzy\.yml found/, err.message)
+    end
+  end
 end

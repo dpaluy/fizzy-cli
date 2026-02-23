@@ -45,12 +45,21 @@ class CLIInitTest < Minitest::Test
       config = YAML.safe_load_file(config_path)
       assert_equal "acme", config["account"]
       assert_equal "b1", config["board"]
+      assert_equal({ "b1" => "Sprint Board", "b2" => "Backlog" }, config["boards"])
       assert_match(/Wrote/, out)
     end
   end
 
   def test_init_creates_config_without_board
     Dir.mktmpdir do |dir|
+      boards = [
+        { "id" => "b1", "name" => "Sprint Board" },
+        { "id" => "b2", "name" => "Backlog" }
+      ]
+
+      stub_request(:get, "#{BASE}/acme/boards")
+        .to_return(status: 200, body: boards.to_json, headers: { "Content-Type" => "application/json" })
+
       config_path = File.join(dir, ".fizzy.yml")
       out = run_init(dir, "1\nn\n")
 
@@ -58,6 +67,7 @@ class CLIInitTest < Minitest::Test
       config = YAML.safe_load_file(config_path)
       assert_equal "acme", config["account"]
       assert_nil config["board"]
+      assert_equal({ "b1" => "Sprint Board", "b2" => "Backlog" }, config["boards"])
       assert_match(/Wrote/, out)
     end
   end

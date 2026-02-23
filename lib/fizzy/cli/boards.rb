@@ -56,6 +56,21 @@ module Fizzy
         client.delete("boards/#{board_id}")
         puts "Board #{board_id} deleted."
       end
+
+      desc "sync", "Refresh boards cache in .fizzy.yml"
+      def sync
+        raise Thor::Error, "No .fizzy.yml found. Run: fizzy init" unless project_config.found?
+
+        boards = paginator.all("boards")
+        boards_hash = boards.to_h { |b| [b["id"], b["name"]] }
+
+        config = YAML.safe_load_file(project_config.path)
+        config = {} unless config.is_a?(Hash)
+        config["boards"] = boards_hash
+
+        File.write(project_config.path, YAML.dump(config))
+        say "Synced #{boards_hash.size} board(s) to #{project_config.path}"
+      end
     end
   end
 end

@@ -32,7 +32,10 @@ module Fizzy
 
       selected = pick_account
       config = { "account" => selected["account_slug"] }
-      config["board"] = pick_board(selected) if yes?("Set a default board?")
+
+      boards = fetch_boards(selected)
+      config["boards"] = boards.to_h { |b| [b["id"], b["name"]] } if boards.any?
+      config["board"] = pick_board(boards) if boards.any? && yes?("Set a default board?")
 
       File.write(config_path, YAML.dump(config))
       say "Wrote #{config_path}"
@@ -97,15 +100,14 @@ module Fizzy
       accounts[idx]
     end
 
-    def pick_board(account)
+    def fetch_boards(account)
       c = Client.new(token: account["access_token"], account_slug: account["account_slug"])
       boards = c.get("boards").body
+      say "No boards found." if boards.empty?
+      boards
+    end
 
-      if boards.empty?
-        say "No boards found."
-        return nil
-      end
-
+    def pick_board(boards)
       say "Boards:"
       boards.each_with_index do |b, i|
         say "  #{i + 1}. #{b["name"]} (#{b["id"]})"

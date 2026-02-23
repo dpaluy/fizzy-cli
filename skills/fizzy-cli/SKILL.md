@@ -42,7 +42,15 @@ Set per-project defaults with `fizzy init` (interactive) or by creating `.fizzy.
 ```yaml
 account: acme
 board: b1
+boards:
+  b1: "Sprint Board"
+  b2: "Backlog"
 ```
+
+- `account` and `board` set defaults for CLI commands
+- `boards` is a cached `id → name` map of available boards (read-only reference)
+- `fizzy init` populates `boards` automatically
+- `fizzy boards sync` refreshes the cached list from the API
 
 Resolution priority (highest wins):
 1. CLI flag (`--account` / `--board`)
@@ -72,6 +80,7 @@ fizzy boards get BOARD_ID
 fizzy boards create "Board Name"
 fizzy boards update BOARD_ID --name "New Name"
 fizzy boards delete BOARD_ID
+fizzy boards sync                                    # Refresh boards cache in .fizzy.yml
 ```
 
 ## Cards
@@ -195,7 +204,11 @@ Note: `fizzy pins list` requires session auth (not available with PAT).
 
 ### Discover boards and cards
 
+If `.fizzy.yml` exists with a `boards` key, read it directly to avoid an API call.
+Otherwise fetch from the API:
+
 ```bash
+fizzy boards sync                                    # Refresh .fizzy.yml boards cache
 fizzy boards list --json
 BOARD_ID=$(fizzy boards list --json | jq -r '.[0].id')
 fizzy cards list --board $BOARD_ID

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-02-22
+
+### Added
+- Cache boards in `.fizzy.yml` as `boards: { id: name }` hash for quick lookups without API calls
+- `fizzy boards sync` command to refresh the cached boards list from the API
+- `fizzy init` now automatically fetches and caches all boards during setup
+- `ProjectConfig#boards` accessor for reading cached board data
+
 ## [0.4.1] - 2026-02-22
 
 ### Fixed

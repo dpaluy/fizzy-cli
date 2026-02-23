@@ -20,6 +20,8 @@ module Fizzy
 
     def board = @data["board"]
 
+    def boards = @data["boards"] || {}
+
     private
 
     def find_config(dir)
