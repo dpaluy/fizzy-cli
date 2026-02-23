@@ -78,8 +78,10 @@ class CLIInitTest < Minitest::Test
     out = nil
     Dir.stub(:pwd, dir) do
       Fizzy::Auth.stub(:token_data, TOKEN_DATA) do
-        $stdin = StringIO.new(input)
-        out, = capture_io { Fizzy::CLI.start(["init"]) }
+        Thor::LineEditor::Readline.stub(:available?, false) do
+          $stdin = StringIO.new(input)
+          out, = capture_io { Fizzy::CLI.start(["init"]) }
+        end
       end
     end
     out
