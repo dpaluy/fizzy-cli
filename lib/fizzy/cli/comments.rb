@@ -44,10 +44,14 @@ module Fizzy
       def update(comment_id)
         resp = client.put("cards/#{options[:card]}/comments/#{comment_id}", body: build_body(:body))
         c = resp.body
-        output_detail(c, pairs: [
-                        ["ID", c["id"]],
-                        ["Body", c["body"]]
-                      ])
+        if c
+          output_detail(c, pairs: [
+                          ["ID", c["id"]],
+                          ["Body", c["body"]]
+                        ])
+        else
+          puts "Comment #{comment_id} updated."
+        end
       end
 
       desc "delete COMMENT_ID", "Delete a comment"

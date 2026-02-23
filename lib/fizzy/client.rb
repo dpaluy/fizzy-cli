@@ -81,8 +81,8 @@ module Fizzy
 
       case status
       when 200..299
-        # Follow Location header on 201 to fetch the created resource
-        if status == 201 && parsed_body.nil? && response["location"]
+        # Follow Location header to fetch the resource when body is empty
+        if parsed_body.nil? && response["location"]
           location = response["location"].sub(/\.json$/, "")
           return get(location)
         end

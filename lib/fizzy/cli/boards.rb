@@ -41,10 +41,14 @@ module Fizzy
       def update(board_id)
         resp = client.put("boards/#{board_id}", body: { name: options[:name] })
         b = resp.body
-        output_detail(b, pairs: [
-                        ["ID", b["id"]],
-                        ["Name", b["name"]]
-                      ])
+        if b
+          output_detail(b, pairs: [
+                          ["ID", b["id"]],
+                          ["Name", b["name"]]
+                        ])
+        else
+          puts "Board #{board_id} updated."
+        end
       end
 
       desc "delete BOARD_ID", "Delete a board"

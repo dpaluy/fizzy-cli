@@ -60,8 +60,8 @@ All commands support:
 ## Identity
 
 ```bash
-fizzy identity               # Show all accounts and user info
-fizzy identity --json        # JSON format
+fizzy auth identity               # Show all accounts and user info
+fizzy auth identity --json        # JSON format
 ```
 
 ## Boards
@@ -232,7 +232,7 @@ fizzy cards not-now 42                                 # Deferred
 ### Check what's assigned to you
 
 ```bash
-MY_ID=$(fizzy identity --json | jq -r '.accounts[0].user.id')
+MY_ID=$(fizzy auth identity --json | jq -r '.accounts[0].user.id')
 fizzy cards list --assignee $MY_ID
 ```
 

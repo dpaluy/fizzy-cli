@@ -33,11 +33,15 @@ module Fizzy
       def update(user_id)
         resp = client.put("users/#{user_id}", body: build_body(:name, :role))
         u = resp.body
-        output_detail(u, pairs: [
-                        ["ID", u["id"]],
-                        ["Name", u["name"]],
-                        ["Role", u["role"]]
-                      ])
+        if u
+          output_detail(u, pairs: [
+                          ["ID", u["id"]],
+                          ["Name", u["name"]],
+                          ["Role", u["role"]]
+                        ])
+        else
+          puts "User #{user_id} updated."
+        end
       end
 
       desc "deactivate USER_ID", "Deactivate a user"

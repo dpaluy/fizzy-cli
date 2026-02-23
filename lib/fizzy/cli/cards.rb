@@ -73,10 +73,14 @@ module Fizzy
       def update(number)
         resp = client.put("cards/#{number}", body: build_body(:title, :body))
         c = resp.body
-        output_detail(c, pairs: [
-                        ["Number", "##{c["number"]}"],
-                        ["Title", c["title"]]
-                      ])
+        if c
+          output_detail(c, pairs: [
+                          ["Number", "##{c["number"]}"],
+                          ["Title", c["title"]]
+                        ])
+        else
+          puts "Card ##{number} updated."
+        end
       end
 
       desc "delete NUMBER", "Delete a card"

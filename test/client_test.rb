@@ -102,6 +102,29 @@ class ClientTest < Minitest::Test
     assert_equal({ "id" => "42" }, response.body)
   end
 
+  # --- PUT with empty body follows Location ---
+
+  def test_put_with_empty_body_follows_location
+    stub_request(:put, "#{BASE}/api/boards/1")
+      .to_return(status: 200, body: "", headers: { "Location" => "/api/boards/1" })
+
+    stub_request(:get, "#{BASE}/api/boards/1")
+      .to_return(status: 200, body: '{"id":"1","name":"Updated"}', headers: { "Content-Type" => "application/json" })
+
+    response = @client.put("/api/boards/1", body: { name: "Updated" })
+
+    assert_equal({ "id" => "1", "name" => "Updated" }, response.body)
+  end
+
+  def test_put_with_empty_body_and_no_location_returns_nil_body
+    stub_request(:put, "#{BASE}/api/boards/1")
+      .to_return(status: 200, body: "", headers: {})
+
+    response = @client.put("/api/boards/1", body: { name: "Updated" })
+
+    assert_nil response.body
+  end
+
   # --- Error responses ---
 
   def test_401_raises_auth_error

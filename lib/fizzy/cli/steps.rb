@@ -37,11 +37,15 @@ module Fizzy
         path = "cards/#{options[:card]}/steps/#{step_id}"
         resp = client.put(path, body: build_body(:description, :completed))
         s = resp.body
-        output_detail(s, pairs: [
-                        ["ID", s["id"]],
-                        ["Description", s["description"]],
-                        ["Completed", s["completed"]]
-                      ])
+        if s
+          output_detail(s, pairs: [
+                          ["ID", s["id"]],
+                          ["Description", s["description"]],
+                          ["Completed", s["completed"]]
+                        ])
+        else
+          puts "Step #{step_id} updated."
+        end
       end
 
       desc "delete STEP_ID", "Delete a step"

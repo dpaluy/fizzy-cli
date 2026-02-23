@@ -44,10 +44,14 @@ module Fizzy
       def update(column_id)
         resp = client.put("boards/#{require_board!}/columns/#{column_id}", body: { name: options[:name] })
         c = resp.body
-        output_detail(c, pairs: [
-                        ["ID", c["id"]],
-                        ["Name", c["name"]]
-                      ])
+        if c
+          output_detail(c, pairs: [
+                          ["ID", c["id"]],
+                          ["Name", c["name"]]
+                        ])
+        else
+          puts "Column #{column_id} updated."
+        end
       end
 
       desc "delete COLUMN_ID", "Delete a column"
