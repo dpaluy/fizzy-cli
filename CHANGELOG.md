@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.1] - 2026-02-23
+
+### Fixed
+- Thor `ask()` returns nil in non-TTY environments (CI, piped input) causing NoMethodError on `init` command
+- Init test uses basic line editor to avoid Readline bypassing `$stdin` in CI
+
 ## [0.6.0] - 2026-02-23
 
 ### Added
