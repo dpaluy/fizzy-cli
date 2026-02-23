@@ -13,6 +13,18 @@ Requires Ruby >= 3.2.
 gem install fizzy
 ```
 
+### AI Agent Skill
+
+Fizzy CLI ships with a [skill file](skills/fizzy-cli/SKILL.md) that teaches AI coding assistants (Claude Code, Codex) how to use the CLI. Install it so agents can manage your Fizzy boards and cards autonomously.
+
+```sh
+fizzy skill install                          # Claude Code, user-level (default)
+fizzy skill install --target codex           # OpenAI Codex / OpenCode
+fizzy skill install --target all             # All supported agents
+fizzy skill install --scope project          # Project-level instead of user-level
+fizzy skill uninstall                        # Remove skill file
+```
+
 ## Authentication
 
 ### Getting a Personal Access Token
@@ -189,26 +201,6 @@ bundle exec rake        # runs tests + rubocop
 bundle exec rake test   # tests only
 bundle exec rubocop     # lint only
 ```
-
-## AI Agent Integration
-
-Fizzy CLI ships with a [skill file](skills/fizzy-cli/SKILL.md) that teaches AI coding assistants how to use the CLI. Install it so agents can manage your Fizzy boards and cards autonomously.
-
-The `fizzy` gem must be installed and authenticated first:
-
-```sh
-gem install fizzy-cli
-fizzy auth login --token YOUR_TOKEN
-```
-
-```sh
-fizzy skill install                          # Claude Code, user-level (default)
-fizzy skill install --target codex           # OpenAI Codex / OpenCode
-fizzy skill install --target all             # All supported agents
-fizzy skill install --scope project          # Project-level instead of user-level
-fizzy skill uninstall                        # Remove skill file
-```
-
 
 ## Contributing
 
