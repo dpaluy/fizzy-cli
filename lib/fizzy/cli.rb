@@ -92,7 +92,7 @@ module Fizzy
         say "  #{i + 1}. #{a["account_name"]} (#{a["account_slug"]})#{marker}"
       end
 
-      choice = ask("Select account number [1]:").strip
+      choice = ask("Select account number [1]:").to_s.strip
       choice = "1" if choice.empty?
       idx = choice.to_i - 1
       raise Thor::Error, "Invalid selection" unless idx >= 0 && idx < accounts.size
@@ -114,7 +114,7 @@ module Fizzy
         say "  #{i + 1}. #{b["name"]} (#{b["id"]})"
       end
 
-      board_idx = ask("Select board number:").strip.to_i - 1
+      board_idx = ask("Select board number:").to_s.strip.to_i - 1
       return boards[board_idx]["id"] if board_idx >= 0 && board_idx < boards.size
 
       say "Invalid selection, skipping board."
