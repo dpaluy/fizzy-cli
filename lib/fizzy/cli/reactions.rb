@@ -41,7 +41,7 @@ module Fizzy
       private
 
       def reaction_path(card_number, comment_id = nil)
-        base = "#{slug}/cards/#{card_number}"
+        base = "cards/#{card_number}"
         comment_id ? "#{base}/comments/#{comment_id}/reactions" : "#{base}/reactions"
       end
     end

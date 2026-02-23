@@ -7,7 +7,7 @@ module Fizzy
 
       desc "list", "List notifications"
       def list
-        data = paginator.all("#{slug}/notifications")
+        data = paginator.all("notifications")
         output_list(data, headers: %w[ID Type Card Read Created]) do |n|
           [
             n["id"],
@@ -21,20 +21,20 @@ module Fizzy
 
       desc "read ID", "Mark notification as read"
       def read(id)
-        client.post("#{slug}/notifications/#{id}/reading")
+        client.post("notifications/#{id}/reading")
         puts "Notification #{id} marked read."
       end
 
       desc "unread ID", "Mark notification as unread"
       def unread(id)
-        client.delete("#{slug}/notifications/#{id}/reading")
+        client.delete("notifications/#{id}/reading")
         puts "Notification #{id} marked unread."
       end
 
       desc "mark-all-read", "Mark all notifications as read"
       map "mark-all-read" => :mark_all_read
       def mark_all_read
-        client.post("#{slug}/notifications/bulk_reading")
+        client.post("notifications/bulk_reading")
         puts "All notifications marked read."
       end
     end

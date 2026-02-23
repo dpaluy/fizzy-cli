@@ -6,8 +6,6 @@ module Fizzy
   class Client
     BASE_URL = "https://app.fizzy.do"
 
-    attr_reader :account_slug
-
     def initialize(token:, account_slug:)
       @token = token
       @account_slug = account_slug
@@ -49,7 +47,8 @@ module Fizzy
     end
 
     def request(method, path, body: nil, params: {})
-      uri = URI("#{BASE_URL}#{path}")
+      full_path = path.start_with?("/") ? path : "/#{@account_slug}/#{path}"
+      uri = URI("#{BASE_URL}#{full_path}")
       uri.query = URI.encode_www_form(params) unless params.empty?
 
       req = build_request(method, uri)

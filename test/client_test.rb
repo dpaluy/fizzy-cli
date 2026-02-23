@@ -225,10 +225,4 @@ class ClientTest < Minitest::Test
 
     assert at_exit_called, "Expected at_exit to be registered when connection is created"
   end
-
-  # --- Account slug ---
-
-  def test_account_slug_accessor
-    assert_equal "acme", @client.account_slug
-  end
 end

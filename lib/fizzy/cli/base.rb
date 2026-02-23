@@ -28,10 +28,6 @@ module Fizzy
         )
       end
 
-      def slug
-        "/#{client.account_slug}"
-      end
-
       def paginator
         @paginator ||= Paginator.new(client)
       end

@@ -7,7 +7,7 @@ module Fizzy
 
       desc "list", "List all tags"
       def list
-        data = paginator.all("#{slug}/tags")
+        data = paginator.all("tags")
         output_list(data, headers: %w[ID Title Color]) do |t|
           [t["id"], t["title"] || t["name"], t["color"]]
         end

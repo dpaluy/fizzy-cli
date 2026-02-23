@@ -8,7 +8,7 @@ module Fizzy
       desc "get STEP_ID", "Show a step"
       option :card, required: true, type: :numeric, desc: "Card number"
       def get(step_id)
-        resp = client.get("#{slug}/cards/#{options[:card]}/steps/#{step_id}")
+        resp = client.get("cards/#{options[:card]}/steps/#{step_id}")
         s = resp.body
         output_detail(s, pairs: [
                         ["ID", s["id"]],
@@ -21,7 +21,7 @@ module Fizzy
       desc "create DESCRIPTION", "Add a step to a card"
       option :card, required: true, type: :numeric, desc: "Card number"
       def create(description)
-        resp = client.post("#{slug}/cards/#{options[:card]}/steps", body: { description: description })
+        resp = client.post("cards/#{options[:card]}/steps", body: { description: description })
         s = resp.body
         output_detail(s, pairs: [
                         ["ID", s["id"]],
@@ -34,7 +34,7 @@ module Fizzy
       option :description, desc: "New description"
       option :completed, type: :boolean, desc: "Mark completed"
       def update(step_id)
-        path = "#{slug}/cards/#{options[:card]}/steps/#{step_id}"
+        path = "cards/#{options[:card]}/steps/#{step_id}"
         resp = client.put(path, body: build_body(:description, :completed))
         s = resp.body
         output_detail(s, pairs: [
@@ -47,7 +47,7 @@ module Fizzy
       desc "delete STEP_ID", "Delete a step"
       option :card, required: true, type: :numeric, desc: "Card number"
       def delete(step_id)
-        client.delete("#{slug}/cards/#{options[:card]}/steps/#{step_id}")
+        client.delete("cards/#{options[:card]}/steps/#{step_id}")
         puts "Step #{step_id} deleted."
       end
     end

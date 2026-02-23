@@ -8,7 +8,7 @@ module Fizzy
       desc "list", "List comments on a card"
       option :card, required: true, type: :numeric, desc: "Card number"
       def list
-        data = paginator.all("#{slug}/cards/#{options[:card]}/comments")
+        data = paginator.all("cards/#{options[:card]}/comments")
         output_list(data, headers: %w[ID Author Created]) do |c|
           [c["id"], c.dig("creator", "name"), c["created_at"]]
         end
@@ -17,7 +17,7 @@ module Fizzy
       desc "get COMMENT_ID", "Show a comment"
       option :card, required: true, type: :numeric, desc: "Card number"
       def get(comment_id)
-        resp = client.get("#{slug}/cards/#{options[:card]}/comments/#{comment_id}")
+        resp = client.get("cards/#{options[:card]}/comments/#{comment_id}")
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -30,7 +30,7 @@ module Fizzy
       desc "create BODY", "Add a comment to a card"
       option :card, required: true, type: :numeric, desc: "Card number"
       def create(body_text)
-        resp = client.post("#{slug}/cards/#{options[:card]}/comments", body: { body: body_text })
+        resp = client.post("cards/#{options[:card]}/comments", body: { body: body_text })
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -42,7 +42,7 @@ module Fizzy
       option :card, required: true, type: :numeric, desc: "Card number"
       option :body, required: true, desc: "New body"
       def update(comment_id)
-        resp = client.put("#{slug}/cards/#{options[:card]}/comments/#{comment_id}", body: build_body(:body))
+        resp = client.put("cards/#{options[:card]}/comments/#{comment_id}", body: build_body(:body))
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -53,7 +53,7 @@ module Fizzy
       desc "delete COMMENT_ID", "Delete a comment"
       option :card, required: true, type: :numeric, desc: "Card number"
       def delete(comment_id)
-        client.delete("#{slug}/cards/#{options[:card]}/comments/#{comment_id}")
+        client.delete("cards/#{options[:card]}/comments/#{comment_id}")
         puts "Comment #{comment_id} deleted."
       end
     end

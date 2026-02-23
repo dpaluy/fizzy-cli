@@ -16,13 +16,13 @@ module Fizzy
 
       desc "pin NUMBER", "Pin a card"
       def pin(number)
-        client.post("#{slug}/cards/#{number}/pin")
+        client.post("cards/#{number}/pin")
         puts "Card ##{number} pinned."
       end
 
       desc "unpin NUMBER", "Unpin a card"
       def unpin(number)
-        client.delete("#{slug}/cards/#{number}/pin")
+        client.delete("cards/#{number}/pin")
         puts "Card ##{number} unpinned."
       end
     end

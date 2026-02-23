@@ -32,14 +32,14 @@ Multi-account:
 
 ```bash
 fizzy auth accounts           # List accounts (* = default)
-fizzy auth switch /SLUG       # Change default (e.g. /6160537)
+fizzy auth switch SLUG        # Change default (e.g. 6160537)
 ```
 
 ## Global Flags
 
 All commands support:
 - `--json` — Machine-readable JSON output (use for parsing)
-- `--account /SLUG` — Target a specific account
+- `--account SLUG` — Target a specific account
 
 ## Identity
 
@@ -227,4 +227,4 @@ fizzy cards list --assignee $MY_ID
 - `fizzy cards get` returns steps inline — no separate steps list endpoint
 - Append `help` to any subcommand: `fizzy cards help`, `fizzy columns help`
 - Credentials at `~/.config/fizzy-cli/tokens.yml`
-- Override account per-command with `--account /SLUG`
+- Override account per-command with `--account SLUG`

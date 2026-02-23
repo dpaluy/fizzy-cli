@@ -8,7 +8,7 @@ module Fizzy
       desc "list", "List columns for a board"
       option :board, required: true, desc: "Board ID"
       def list
-        data = paginator.all("#{slug}/boards/#{options[:board]}/columns")
+        data = paginator.all("boards/#{options[:board]}/columns")
         output_list(data, headers: %w[ID Name Position]) do |c|
           [c["id"], c["name"], c["position"]]
         end
@@ -17,7 +17,7 @@ module Fizzy
       desc "get COLUMN_ID", "Show a column"
       option :board, required: true, desc: "Board ID"
       def get(column_id)
-        resp = client.get("#{slug}/boards/#{options[:board]}/columns/#{column_id}")
+        resp = client.get("boards/#{options[:board]}/columns/#{column_id}")
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -30,7 +30,7 @@ module Fizzy
       desc "create NAME", "Create a column"
       option :board, required: true, desc: "Board ID"
       def create(name)
-        resp = client.post("#{slug}/boards/#{options[:board]}/columns", body: { name: name })
+        resp = client.post("boards/#{options[:board]}/columns", body: { name: name })
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -42,7 +42,7 @@ module Fizzy
       option :board, required: true, desc: "Board ID"
       option :name, required: true, desc: "New column name"
       def update(column_id)
-        resp = client.put("#{slug}/boards/#{options[:board]}/columns/#{column_id}", body: { name: options[:name] })
+        resp = client.put("boards/#{options[:board]}/columns/#{column_id}", body: { name: options[:name] })
         c = resp.body
         output_detail(c, pairs: [
                         ["ID", c["id"]],
@@ -53,7 +53,7 @@ module Fizzy
       desc "delete COLUMN_ID", "Delete a column"
       option :board, required: true, desc: "Board ID"
       def delete(column_id)
-        client.delete("#{slug}/boards/#{options[:board]}/columns/#{column_id}")
+        client.delete("boards/#{options[:board]}/columns/#{column_id}")
         puts "Column #{column_id} deleted."
       end
     end
