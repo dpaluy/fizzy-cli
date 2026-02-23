@@ -98,4 +98,25 @@ class ProjectConfigTest < Minitest::Test
       assert_equal({}, config.boards)
     end
   end
+
+  def test_url_returns_custom_url
+    Dir.mktmpdir do |dir|
+      data = { "account" => "acme", "url" => "https://fizzy.mycompany.com" }
+      File.write(File.join(dir, ".fizzy.yml"), YAML.dump(data))
+
+      config = Fizzy::ProjectConfig.new(dir)
+
+      assert_equal "https://fizzy.mycompany.com", config.url
+    end
+  end
+
+  def test_url_returns_nil_when_missing
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, ".fizzy.yml"), YAML.dump("account" => "acme"))
+
+      config = Fizzy::ProjectConfig.new(dir)
+
+      assert_nil config.url
+    end
+  end
 end

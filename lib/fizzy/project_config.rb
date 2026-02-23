@@ -20,6 +20,8 @@ module Fizzy
 
     def board = @data["board"]
 
+    def url = @data["url"]
+
     def boards = @data["boards"] || {}
 
     private

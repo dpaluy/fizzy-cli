@@ -101,7 +101,8 @@ module Fizzy
     end
 
     def fetch_boards(account)
-      c = Client.new(token: account["access_token"], account_slug: account["account_slug"])
+      url = ENV["FIZZY_URL"] || account["url"] || Client::DEFAULT_BASE_URL
+      c = Client.new(token: account["access_token"], account_slug: account["account_slug"], base_url: url)
       boards = c.get("boards").body
       say "No boards found." if boards.empty?
       boards

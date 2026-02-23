@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-02-23
+
+### Added
+- Custom URL support for self-hosted Fizzy instances
+- `fizzy auth login --url URL` stores instance URL per-account in tokens.yml
+- `url` key in `.fizzy.yml` for per-project instance URL
+- `FIZZY_URL` environment variable for instance URL override
+- URL resolution priority: `FIZZY_URL` env > `.fizzy.yml` > tokens.yml per-account > default
+- URL validation in Client rejects non-http(s) URLs with clear error message
+- `auth status` displays URL when using a non-default instance
+- HTTP scheme detection for SSL (supports `http://` for local development)
+
 ## [0.5.0] - 2026-02-22
 
 ### Added

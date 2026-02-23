@@ -43,7 +43,13 @@ fizzy skill uninstall                        # Remove skill file
 fizzy auth login --token YOUR_TOKEN
 ```
 
-Tokens are stored at `~/.config/fizzy-cli/tokens.yml`. You can also set `FIZZY_TOKEN` as an environment variable with `--account` to skip the file.
+For self-hosted Fizzy instances, pass `--url`:
+
+```sh
+fizzy auth login --token YOUR_TOKEN --url https://fizzy.mycompany.com
+```
+
+The URL is stored per-account in `~/.config/fizzy-cli/tokens.yml`. You can also set `FIZZY_TOKEN` as an environment variable with `--account` to skip the file.
 
 ```sh
 fizzy auth status     # Show current auth
@@ -64,6 +70,14 @@ This creates a `.fizzy.yml` in the current directory:
 ```yaml
 account: acme
 board: b1
+```
+
+For self-hosted instances, add a `url` key:
+
+```yaml
+account: acme
+board: b1
+url: https://fizzy.mycompany.com
 ```
 
 **Resolution priority** (highest wins):
@@ -210,9 +224,16 @@ end
 
 | Source | Purpose |
 |--------|---------|
-| `.fizzy.yml` | Per-project account and board defaults |
-| `~/.config/fizzy-cli/tokens.yml` | Stored auth tokens and default account |
+| `.fizzy.yml` | Per-project account, board, and URL defaults |
+| `~/.config/fizzy-cli/tokens.yml` | Stored auth tokens, default account, and per-account URL |
 | `FIZZY_TOKEN` env var | Token override (requires `--account`) |
+| `FIZZY_URL` env var | Instance URL override (default: `https://app.fizzy.do`) |
+
+**URL resolution priority** (highest wins):
+1. `FIZZY_URL` environment variable
+2. `url` in `.fizzy.yml`
+3. Per-account `url` from `tokens.yml` (set via `fizzy auth login --url`)
+4. Default: `https://app.fizzy.do`
 
 ## Development
 

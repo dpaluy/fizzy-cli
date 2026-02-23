@@ -24,11 +24,15 @@ module Fizzy
 
       desc "login", "Authenticate with a Personal Access Token"
       option :token, required: true, desc: "Personal Access Token"
+      option :url, type: :string, desc: "Custom Fizzy instance URL (default: #{Client::DEFAULT_BASE_URL})"
       def login
         token = options[:token]
+        custom_url = options[:url]
 
         # Verify token by fetching identity
-        c = Client.new(token: token, account_slug: "")
+        client_opts = { token: token, account_slug: "" }
+        client_opts[:base_url] = custom_url if custom_url
+        c = Client.new(**client_opts)
         resp = c.get("/my/identity")
         accounts = resp.body["accounts"]
 
@@ -36,7 +40,7 @@ module Fizzy
 
         # Build tokens data
         token_accounts = accounts.map do |a|
-          {
+          acct = {
             "account_slug" => Auth.normalize_slug(a["slug"]),
             "account_name" => a["name"],
             "account_id" => a["id"],
@@ -49,6 +53,8 @@ module Fizzy
             },
             "created_at" => Time.now.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")
           }
+          acct["url"] = custom_url if custom_url
+          acct
         end
 
         data = {
@@ -69,13 +75,12 @@ module Fizzy
 
       desc "status", "Show current auth status"
       def status
-        acct = Auth.resolve
-        c = Client.new(token: acct["access_token"], account_slug: acct["account_slug"])
-        resp = c.get("/my/identity")
+        resp = client.get("/my/identity")
 
+        puts "URL: #{client.base_url}" unless base_url == Client::DEFAULT_BASE_URL
         puts "Token: #{Auth::TOKEN_FILE}"
-        puts "Account: #{acct["account_name"]} (#{acct["account_slug"]})"
-        puts "User: #{acct.dig("user", "name")} <#{acct.dig("user", "email_address")}>"
+        puts "Account: #{account["account_name"]} (#{account["account_slug"]})"
+        puts "User: #{account.dig("user", "name")} <#{account.dig("user", "email_address")}>"
 
         accounts_count = resp.body["accounts"].size
         puts "Accounts: #{accounts_count}" if accounts_count > 1

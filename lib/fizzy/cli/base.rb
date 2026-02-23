@@ -37,10 +37,15 @@ module Fizzy
                        "No value provided for option '--board'. Set via --board, .fizzy.yml, or: fizzy init")
       end
 
+      def base_url
+        ENV["FIZZY_URL"] || project_config.url || account["url"] || Client::DEFAULT_BASE_URL
+      end
+
       def client
         @client ||= Client.new(
           token: account["access_token"],
-          account_slug: account["account_slug"]
+          account_slug: account["account_slug"],
+          base_url: base_url
         )
       end
 

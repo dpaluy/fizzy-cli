@@ -255,6 +255,43 @@ class ClientTest < Minitest::Test
     assert_equal 200, response.status
   end
 
+  # --- Custom base URL ---
+
+  def test_custom_base_url
+    custom = "https://fizzy.mycompany.com"
+    client = Fizzy::Client.new(token: "test-token", account_slug: "acme", base_url: custom)
+
+    stub_request(:get, "#{custom}/acme/boards")
+      .to_return(status: 200, body: "[]", headers: { "Content-Type" => "application/json" })
+
+    response = client.get("boards")
+
+    assert_equal 200, response.status
+    assert_equal custom, client.base_url
+  end
+
+  def test_custom_base_url_strips_trailing_slash
+    client = Fizzy::Client.new(token: "t", account_slug: "a", base_url: "https://fizzy.example.com/")
+
+    assert_equal "https://fizzy.example.com", client.base_url
+  end
+
+  def test_default_base_url
+    assert_equal "https://app.fizzy.do", @client.base_url
+  end
+
+  def test_invalid_base_url_raises_argument_error
+    assert_raises(ArgumentError) do
+      Fizzy::Client.new(token: "t", account_slug: "a", base_url: "not-a-url")
+    end
+  end
+
+  def test_http_base_url_is_allowed
+    client = Fizzy::Client.new(token: "t", account_slug: "a", base_url: "http://localhost:3000")
+
+    assert_equal "http://localhost:3000", client.base_url
+  end
+
   # --- Connection auto-close ---
 
   def test_connection_registers_at_exit_hook

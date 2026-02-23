@@ -4,11 +4,15 @@ module Fizzy
   Response = Data.define(:body, :headers, :status)
 
   class Client
-    BASE_URL = "https://app.fizzy.do"
+    DEFAULT_BASE_URL = "https://app.fizzy.do"
 
-    def initialize(token:, account_slug:)
+    attr_reader :base_url
+
+    def initialize(token:, account_slug:, base_url: DEFAULT_BASE_URL)
       @token = token
       @account_slug = account_slug
+      @base_url = base_url.chomp("/")
+      raise ArgumentError, "Invalid URL (must be http or https): #{@base_url}" unless @base_url.match?(%r{\Ahttps?://})
     end
 
     def get(path, params: {})
@@ -31,9 +35,9 @@ module Fizzy
 
     def connection
       @connection ||= begin
-        uri = URI(BASE_URL)
+        uri = URI(@base_url)
         http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
+        http.use_ssl = uri.scheme == "https"
         http.open_timeout = 5
         http.read_timeout = 30
         http.start
@@ -48,7 +52,7 @@ module Fizzy
 
     def request(method, path, body: nil, params: {})
       full_path = path.start_with?("/") ? path : "/#{@account_slug}/#{path}"
-      uri = URI("#{BASE_URL}#{full_path}")
+      uri = URI("#{@base_url}#{full_path}")
       uri.query = URI.encode_www_form(params) unless params.empty?
 
       req = build_request(method, uri)
