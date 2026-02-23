@@ -31,7 +31,10 @@ module Fizzy
       option :name, desc: "New name"
       option :role, desc: "New role"
       def update(user_id)
-        resp = client.put("users/#{user_id}", body: build_body(:name, :role))
+        body = build_body(:name, :role)
+        raise Thor::Error, "Nothing to update. Provide --name or --role" if body.empty?
+
+        resp = client.put("users/#{user_id}", body: body)
         u = resp.body
         if u
           output_detail(u, pairs: [

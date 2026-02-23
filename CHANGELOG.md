@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] - 2026-02-22
+
+### Fixed
+- Card create and update sent `body` instead of `description`, causing API 400 errors (field silently dropped by Rails strong params)
+- Card create with `--column` now triages via separate API call instead of sending unpermitted `column_id` param
+- HTTP 400 responses now get parsed error messages (like 422) instead of raw JSON dump
+- Cards, steps, and users update commands validate at least one option is provided before sending empty request
+
+### Added
+- `BadRequestError` class for explicit HTTP 400 handling
+
 ## [0.4.0] - 2026-02-22
 
 ### Added

@@ -127,6 +127,26 @@ class ClientTest < Minitest::Test
 
   # --- Error responses ---
 
+  def test_400_raises_bad_request_error
+    stub_request(:post, "#{BASE}/api/boards")
+      .to_return(status: 400, body: '{"error":"Bad Request"}', headers: { "Content-Type" => "application/json" })
+
+    error = assert_raises(Fizzy::BadRequestError) { @client.post("/api/boards", body: {}) }
+
+    assert_equal 400, error.status
+    assert_equal "Bad Request", error.message
+  end
+
+  def test_400_raises_bad_request_error_with_errors_array
+    stub_request(:post, "#{BASE}/api/boards")
+      .to_return(status: 400, body: '{"errors":["param is missing or the value is empty: card"]}', headers: { "Content-Type" => "application/json" })
+
+    error = assert_raises(Fizzy::BadRequestError) { @client.post("/api/boards", body: {}) }
+
+    assert_equal 400, error.status
+    assert_equal "Validation failed\n  - param is missing or the value is empty: card", error.message
+  end
+
   def test_401_raises_auth_error
     stub_request(:get, "#{BASE}/api/boards")
       .to_return(status: 401, body: '{"error":"invalid token"}', headers: { "Content-Type" => "application/json" })

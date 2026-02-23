@@ -88,6 +88,8 @@ module Fizzy
         end
 
         Response.new(body: parsed_body, headers: response.to_hash, status: status)
+      when 400
+        raise BadRequestError.new(parse_error(response), status: 400, body: parsed_body)
       when 301, 302
         raise AuthError.new("Redirected to #{response["location"]} — endpoint may require session auth",
                             status: status, body: parsed_body)

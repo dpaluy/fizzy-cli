@@ -11,6 +11,7 @@ module Fizzy
     end
   end
 
+  class BadRequestError < Error; end
   class AuthError < Error; end
   class NotFoundError < Error; end
   class ValidationError < Error; end

@@ -99,4 +99,89 @@ class CLICardsTest < Minitest::Test
     assert_match(/Number\s+#99/, out)
     assert_match(/Title\s+New card/, out)
   end
+
+  def test_cards_create_sends_description_not_body
+    stub_request(:post, "#{BASE}/test-team/boards/b1/cards")
+      .with { |req| JSON.parse(req.body) == { "title" => "New card", "description" => "<p>Hello</p>" } }
+      .to_return(
+        status: 200,
+        body: { "number" => 99, "title" => "New card", "url" => "https://app.fizzy.do/cards/99" }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    out, = capture_io do
+      Fizzy::Auth.stub(:resolve, ACCOUNT) do
+        Fizzy::CLI::Cards.start(["create", "New card", "--board", "b1", "--body", "<p>Hello</p>"])
+      end
+    end
+
+    assert_match(/Number\s+#99/, out)
+  end
+
+  def test_cards_create_with_column_triages_after_creation
+    stub_request(:post, "#{BASE}/test-team/boards/b1/cards")
+      .to_return(
+        status: 200,
+        body: { "number" => 99, "title" => "New card", "url" => "https://app.fizzy.do/cards/99" }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    triage_stub = stub_request(:post, "#{BASE}/test-team/cards/99/triage")
+                  .with { |req| JSON.parse(req.body) == { "column_id" => "col1" } }
+                  .to_return(status: 200, body: "", headers: {})
+
+    capture_io do
+      Fizzy::Auth.stub(:resolve, ACCOUNT) do
+        Fizzy::CLI::Cards.start(["create", "New card", "--board", "b1", "--column", "col1"])
+      end
+    end
+
+    assert_requested triage_stub
+  end
+
+  def test_cards_update_sends_description_not_body
+    stub_request(:put, "#{BASE}/test-team/cards/37")
+      .with { |req| JSON.parse(req.body) == { "description" => "<p>Updated</p>" } }
+      .to_return(
+        status: 200,
+        body: { "number" => 37, "title" => "My card" }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    out, = capture_io do
+      Fizzy::Auth.stub(:resolve, ACCOUNT) do
+        Fizzy::CLI::Cards.new([], { "body" => "<p>Updated</p>" }, {}).invoke(:update, ["37"])
+      end
+    end
+
+    assert_match(/Number\s+#37/, out)
+  end
+
+  def test_cards_update_sends_title
+    stub_request(:put, "#{BASE}/test-team/cards/37")
+      .with { |req| JSON.parse(req.body) == { "title" => "New title" } }
+      .to_return(
+        status: 200,
+        body: { "number" => 37, "title" => "New title" }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
+    out, = capture_io do
+      Fizzy::Auth.stub(:resolve, ACCOUNT) do
+        Fizzy::CLI::Cards.new([], { "title" => "New title" }, {}).invoke(:update, ["37"])
+      end
+    end
+
+    assert_match(/Title\s+New title/, out)
+  end
+
+  def test_cards_update_raises_when_no_options
+    err = assert_raises(Thor::Error) do
+      Fizzy::Auth.stub(:resolve, ACCOUNT) do
+        Fizzy::CLI::Cards.new([], {}, {}).invoke(:update, ["37"])
+      end
+    end
+
+    assert_equal "Nothing to update. Provide --title or --body", err.message
+  end
 end

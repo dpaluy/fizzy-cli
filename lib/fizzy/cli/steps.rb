@@ -34,8 +34,11 @@ module Fizzy
       option :description, desc: "New description"
       option :completed, type: :boolean, desc: "Mark completed"
       def update(step_id)
+        body = build_body(:description, :completed)
+        raise Thor::Error, "Nothing to update. Provide --description or --completed" if body.empty?
+
         path = "cards/#{options[:card]}/steps/#{step_id}"
-        resp = client.put(path, body: build_body(:description, :completed))
+        resp = client.put(path, body: body)
         s = resp.body
         if s
           output_detail(s, pairs: [

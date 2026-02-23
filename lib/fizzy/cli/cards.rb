@@ -55,11 +55,11 @@ module Fizzy
       option :body, desc: "Card body (HTML)"
       option :column, desc: "Column ID"
       def create(title)
-        body = { title: title }
-        body[:body] = options[:body] if options[:body]
-        body[:column_id] = options[:column] if options[:column]
-        resp = client.post("boards/#{require_board!}/cards", body: body)
+        payload = { title: title }
+        payload[:description] = options[:body] if options[:body]
+        resp = client.post("boards/#{require_board!}/cards", body: payload)
         c = resp.body
+        client.post("cards/#{c["number"]}/triage", body: { column_id: options[:column] }) if options[:column]
         output_detail(c, pairs: [
                         ["Number", "##{c["number"]}"],
                         ["Title", c["title"]],
@@ -71,7 +71,12 @@ module Fizzy
       option :title, desc: "New title"
       option :body, desc: "New body (HTML)"
       def update(number)
-        resp = client.put("cards/#{number}", body: build_body(:title, :body))
+        payload = {}
+        payload[:title] = options[:title] if options[:title]
+        payload[:description] = options[:body] if options[:body]
+        raise Thor::Error, "Nothing to update. Provide --title or --body" if payload.empty?
+
+        resp = client.put("cards/#{number}", body: payload)
         c = resp.body
         if c
           output_detail(c, pairs: [
