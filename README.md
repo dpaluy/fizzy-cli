@@ -10,7 +10,7 @@ A Ruby command-line client for [Fizzy](https://fizzy.do) project management.
 Requires Ruby >= 3.2.
 
 ```sh
-gem install fizzy
+gem install fizzy-cli
 ```
 
 ### AI Agent Skill
