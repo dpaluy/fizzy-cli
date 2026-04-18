@@ -48,6 +48,7 @@ CLI for managing Fizzy boards, cards, columns, steps, comments, reactions, tags,
 
 - **Cards** are addressed by **number** (integer), everything else by **ID** (base36 UUID)
 - **Columns** and **Steps** are scoped (`--board` / `--card`, or board from `.fizzy.yml`)
+- **"Done" and "Deferred" are card states, not columns.** The Fizzy UI renders them as columns, but the API exposes them as boolean flags: `closed` (set via `cards close`) and `postponed` (set via `cards not-now`). The `columns list` API only returns user-created columns. To list done/deferred cards, filter by `--status closed` or `--status all` (postponed cards are included in `all`).
 - `Client` uses `Net::HTTP` directly, returns `Fizzy::Response` (Data.define). Auto-prepends `/{account_slug}/` to relative paths; absolute paths (starting with `/`) pass through as-is
 - `Paginator` follows RFC 5988 Link headers for pagination
 - CLI subcommands pass relative paths (e.g. `"cards/#{number}"`) — the Client handles slug prefixing

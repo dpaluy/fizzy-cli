@@ -87,6 +87,8 @@ fizzy boards sync                                    # Refresh boards cache in .
 
 Cards are addressed by **number** (integer), not ID. The `--board` flag is required for `create` unless set in `.fizzy.yml`.
 
+**Note:** "Done" and "Deferred" appear as columns in the Fizzy UI but are actually card states (`closed` and `postponed` boolean flags), not real columns. The `columns list` API only returns user-created columns. Use `fizzy cards close` for done and `fizzy cards not-now` for deferred.
+
 ### CRUD
 
 ```bash
