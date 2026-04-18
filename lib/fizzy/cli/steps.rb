@@ -12,7 +12,7 @@ module Fizzy
         s = resp.body
         output_detail(s, pairs: [
                         ["ID", s["id"]],
-                        ["Description", s["description"]],
+                        ["Description", s["content"]],
                         ["Completed", s["completed"]],
                         ["Position", s["position"]]
                       ])
@@ -21,11 +21,11 @@ module Fizzy
       desc "create DESCRIPTION", "Add a step to a card"
       option :card, required: true, type: :numeric, desc: "Card number"
       def create(description)
-        resp = client.post("cards/#{options[:card]}/steps", body: { description: description })
+        resp = client.post("cards/#{options[:card]}/steps", body: { content: description })
         s = resp.body
         output_detail(s, pairs: [
                         ["ID", s["id"]],
-                        ["Description", s["description"]]
+                        ["Description", s["content"]]
                       ])
       end
 
@@ -34,7 +34,9 @@ module Fizzy
       option :description, desc: "New description"
       option :completed, type: :boolean, desc: "Mark completed"
       def update(step_id)
-        body = build_body(:description, :completed)
+        body = {}
+        body[:content] = options[:description] if options[:description]
+        body[:completed] = options[:completed] unless options[:completed].nil?
         raise Thor::Error, "Nothing to update. Provide --description or --completed" if body.empty?
 
         path = "cards/#{options[:card]}/steps/#{step_id}"
@@ -43,7 +45,7 @@ module Fizzy
         if s
           output_detail(s, pairs: [
                           ["ID", s["id"]],
-                          ["Description", s["description"]],
+                          ["Description", s["content"]],
                           ["Completed", s["completed"]]
                         ])
         else
