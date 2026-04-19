@@ -100,6 +100,32 @@ fizzy cards list --assignee USER_ID                  # Filter by assignee
 fizzy cards get 42                                   # Show card details + steps
 fizzy cards create "Title" --board BOARD_ID           # Create (--body, --column optional)
 fizzy cards update 42 --title "New title"             # Update (--body optional)
+```
+
+### Card Body Format (HTML)
+
+The `--body` flag accepts **raw HTML** (not markdown). Use HTML tags for structured, readable card descriptions:
+
+```bash
+fizzy cards create "Ship feature X" --board $BOARD_ID --body "<h2>Goal</h2>
+<p>One sentence summary.</p>
+
+<h2>Context</h2>
+<p>Why this task exists.</p>
+
+<h2>Files</h2>
+<ul>
+<li><code>path/to/file</code></li>
+</ul>
+
+<h2>Acceptance Criteria</h2>
+<ul>
+<li>Criterion 1</li>
+<li>Criterion 2</li>
+</ul>" --json
+```
+
+Supported tags: `<h2>`, `<h3>`, `<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<code>`, `<a href="">`. Plain text also works but renders as unformatted paragraphs.
 fizzy cards delete 42
 ```
 
