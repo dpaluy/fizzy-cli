@@ -8,4 +8,5 @@ pkg/
 doc/
 .DS_Store
 .ruby-lsp/
+/Gemfile.lock
 
