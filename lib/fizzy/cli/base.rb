@@ -23,7 +23,7 @@ module Fizzy
 
       def account
         slug = global_options[:account]
-        slug = nil if slug&.empty?
+        slug = nil if slug && slug.empty?
         @account ||= Auth.resolve(slug || project_config.account)
       end
 
