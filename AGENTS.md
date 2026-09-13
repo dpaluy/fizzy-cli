@@ -6,7 +6,7 @@ Ask more questions until you have enough context to give an accurate & confident
 
 ## WHAT (Architecture)
 
-- **Ruby 4.0.1** gem with **Thor 1.5** CLI framework
+- **Thor 1.5** CLI framework gem
 - Production gem, MIT licensed
 - HTTP client talking to `https://app.fizzy.do` REST API
 - Token auth stored at `~/.config/fizzy-cli/tokens.yml`
@@ -88,7 +88,6 @@ bundle exec rake test     # tests only
 
 ### Code Style
 
-- Ruby 4.0.1 features allowed (Data.define, pattern matching, etc.)
-- Snake_case methods, `frozen_string_literal: true` included by convention (not required in Ruby 4)
+- Snake_case methods, `frozen_string_literal: true` included by convention
 - Minimal dependencies — stdlib `net/http`, `json`, `uri` only
 - Thor conventions for CLI option declarations
